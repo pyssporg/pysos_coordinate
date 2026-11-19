@@ -1,6 +1,6 @@
 """Timing policy for a federation.
 
-At 0.1.0 exactly one policy exists: ``WALL_CLOCK``. Instances advance on their
+At 0.2.0 exactly one policy exists: ``WALL_CLOCK``. Instances advance on their
 own clocks and the supervisor only bounds their lifetime. Deterministic
 lock-step co-simulation (a master algorithm negotiating time advances with the
 instances) is an explicit non-goal of this package; it belongs to whoever owns
@@ -31,6 +31,6 @@ class TimingPolicy(str, Enum):
             except ValueError:
                 pass
         raise ValueError(
-            f"unsupported timing policy {value!r}; 0.1.0 supports only "
+            f"unsupported timing policy {value!r}; 0.2.0 supports only "
             f"{cls.WALL_CLOCK.value!r}. Lock-step co-simulation is out of scope."
         )

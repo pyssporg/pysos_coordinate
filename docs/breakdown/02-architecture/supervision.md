@@ -30,7 +30,7 @@ spec in the constructor, so an invalid manifest cannot reach `start()`.
 ## What the supervisor does not do
 
 - **No readiness handshake.** `startup_timeout` is part of the manifest and is
-  validated, but 0.1.0 does not probe an instance for readiness. `start()`
+  validated, but 0.2.0 does not probe an instance for readiness. `start()`
   returns as soon as `Popen` succeeds. This is the most likely field to gain
   meaning in a later release (log or port readiness, bounded by that timeout).
 - **No time synchronisation.** `TimingPolicy.WALL_CLOCK` means each instance

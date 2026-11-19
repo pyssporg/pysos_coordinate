@@ -4,10 +4,10 @@ from pathlib import Path
 
 import pytest
 
-from pysos_simulate.endpoint import Endpoint
-from pysos_simulate.entity import EntityRef
-from pysos_simulate.spec import FederationSpec, InstanceSpec, SpecError
-from pysos_simulate.timing import TimingPolicy
+from pysos_coordinate.endpoint import Endpoint
+from pysos_coordinate.entity import EntityRef
+from pysos_coordinate.spec import FederationSpec, InstanceSpec, SpecError
+from pysos_coordinate.timing import TimingPolicy
 
 
 def _instance(name: str, **kwargs) -> InstanceSpec:

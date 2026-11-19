@@ -1,6 +1,6 @@
 """Local, duplicate-free reference to a simulated entity.
 
-At 0.1.0 this type is intentionally local to ``pysos_simulate``. It does not
+At 0.2.0 this type is intentionally local to ``pysos_coordinate``. It does not
 import ``pysos_interop``. The two definitions agree *by field name*:
 ``site``, ``application``, ``entity``, and ``marking``. A future release may
 consolidate them once ``pysos_interop`` can be depended on; until then the

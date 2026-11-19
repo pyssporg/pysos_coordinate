@@ -1,7 +1,7 @@
 """Network endpoints a federated instance offers or consumes.
 
 An endpoint is deliberately protocol-free: it says *where* to reach a service,
-not what runs on top of it. UDP is the only convenience offered at 0.1.0
+not what runs on top of it. UDP is the only convenience offered at 0.2.0
 because it is the transport the family uses for best-effort telemetry; the
 package still knows nothing about the payload.
 """

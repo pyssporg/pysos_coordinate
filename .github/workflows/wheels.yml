@@ -30,15 +30,15 @@ jobs:
         run: |
           python -m venv /tmp/smoke
           /tmp/smoke/bin/pip install --quiet dist/*.whl
-          /tmp/smoke/bin/python -c "import pysos_simulate; print(pysos_simulate.__version__)"
-          /tmp/smoke/bin/pysos-simulate --version
+          /tmp/smoke/bin/python -c "import pysos_coordinate; print(pysos_coordinate.__version__)"
+          /tmp/smoke/bin/pysos-coordinate --version
 
       - name: Check the version tag
         if: startsWith(github.ref, 'refs/tags/v')
-        # The version is dynamic (hatchling reads src/pysos_simulate/__init__.py),
+        # The version is dynamic (hatchling reads src/pysos_coordinate/__init__.py),
         # so read it back from the installed wheel rather than pyproject.toml.
         run: |
-          version="$(/tmp/smoke/bin/python -c "import pysos_simulate; print(pysos_simulate.__version__)")"
+          version="$(/tmp/smoke/bin/python -c "import pysos_coordinate; print(pysos_coordinate.__version__)")"
           if [ "${GITHUB_REF_NAME#v}" != "$version" ]; then
             echo "Tag ${GITHUB_REF_NAME} does not match package version ${version}." >&2
             exit 1

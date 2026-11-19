@@ -2,7 +2,7 @@
 id: INFO-001
 type: info
 title: Intent
-summary: "Why pysos_simulate exists: supervise a federation of independently launched simulation instances; processes, ports, timing, and status, nothing else"
+summary: "Why pysos_coordinate exists: supervise a federation of independently launched simulation instances; processes, ports, timing, and status, nothing else"
 date: 2026-11-19
 status: current
 ---
@@ -11,7 +11,7 @@ status: current
 
 ## Purpose
 
-`pysos_simulate` sets up and supervises a **federation** of independently
+`pysos_coordinate` sets up and supervises a **federation** of independently
 launched simulation instances, each of which may be a different engine. It owns
 **process, ports, timing policy, and status**. It does not run models itself and
 knows nothing about SSP, FMU, FMI, DIS, or SysML.
@@ -33,7 +33,7 @@ knows nothing about SSP, FMU, FMI, DIS, or SysML.
 - **No engine knowledge, no protocol knowledge.** A participant is an argv, a
   working directory, an environment, some `EntityRef`s, and some endpoints.
 - **Explicit timing policy.** `TimingPolicy.WALL_CLOCK` is the only policy at
-  0.1.0. Anything else is rejected with a clear error, never ignored.
+  0.2.0. Anything else is rejected with a clear error, never ignored.
 - **Deterministic ports.** Allocation depends only on base, stride, and call
   order; reserving a manifest's declared endpoints prevents collisions.
 - **Explicit failure.** Invalid specs raise `SpecError`, launch failures raise

@@ -1,6 +1,6 @@
 """Supervise a federation of independently launched simulation instances.
 
-``pysos_simulate`` owns process, ports, timing policy, and status. It does not
+``pysos_coordinate`` owns process, ports, timing policy, and status. It does not
 run models and knows nothing about SSP, FMU, DIS, or SysML.
 """
 
@@ -19,7 +19,7 @@ from .supervisor import (
 )
 from .timing import TimingPolicy
 
-__version__ = "0.1.0"
+__version__ = "0.2.0"
 
 __all__ = [
     "Endpoint",

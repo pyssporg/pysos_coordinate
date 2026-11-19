@@ -1,4 +1,4 @@
-"""Command line entry point: ``pysos-simulate {run,validate,ports}``."""
+"""Command line entry point: ``pysos-coordinate {run,validate,ports}``."""
 
 from __future__ import annotations
 
@@ -112,7 +112,7 @@ def _cmd_run(args: argparse.Namespace) -> int:
 
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
-        prog="pysos-simulate",
+        prog="pysos-coordinate",
         description="Set up and supervise a federation of simulation instances.",
     )
     parser.add_argument("--version", action="version", version=f"%(prog)s {__version__}")

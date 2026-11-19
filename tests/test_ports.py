@@ -2,9 +2,9 @@ from __future__ import annotations
 
 import pytest
 
-from pysos_simulate.endpoint import Endpoint
-from pysos_simulate.ports import PortAllocator
-from pysos_simulate.spec import FederationSpec, InstanceSpec
+from pysos_coordinate.endpoint import Endpoint
+from pysos_coordinate.ports import PortAllocator
+from pysos_coordinate.spec import FederationSpec, InstanceSpec
 
 
 def _instance(name: str, **kwargs) -> InstanceSpec:

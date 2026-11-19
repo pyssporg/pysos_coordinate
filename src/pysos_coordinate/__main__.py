@@ -1,4 +1,4 @@
-"""Allow ``python -m pysos_simulate`` for environments without the script."""
+"""Allow ``python -m pysos_coordinate`` for environments without the script."""
 
 from __future__ import annotations
 

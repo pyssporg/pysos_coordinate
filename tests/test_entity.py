@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import pytest
 
-from pysos_simulate.entity import EntityRef
+from pysos_coordinate.entity import EntityRef
 
 
 def test_json_roundtrip() -> None:

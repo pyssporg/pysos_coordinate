@@ -13,7 +13,7 @@ SRC = ROOT / "src"
 def _run(*args: object, cwd: Path | None = None) -> subprocess.CompletedProcess[str]:
     env = {**os.environ, "PYTHONPATH": str(SRC)}
     return subprocess.run(
-        [sys.executable, "-m", "pysos_simulate", *(str(arg) for arg in args)],
+        [sys.executable, "-m", "pysos_coordinate", *(str(arg) for arg in args)],
         capture_output=True,
         text=True,
         env=env,
@@ -116,7 +116,7 @@ def test_run_reports_failures(tmp_path: Path) -> None:
 def test_version_and_help() -> None:
     version = _run("--version")
     assert version.returncode == 0
-    assert version.stdout.strip() == "pysos-simulate 0.1.0"
+    assert version.stdout.strip() == "pysos-coordinate 0.2.0"
     help_text = _run("--help")
     assert help_text.returncode == 0
     for command in ("run", "validate", "ports"):

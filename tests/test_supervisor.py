@@ -6,8 +6,8 @@ from pathlib import Path
 
 import pytest
 
-from pysos_simulate.spec import FederationSpec, InstanceSpec
-from pysos_simulate.supervisor import (
+from pysos_coordinate.spec import FederationSpec, InstanceSpec
+from pysos_coordinate.supervisor import (
     Federation,
     InstanceStatus,
     LaunchError,

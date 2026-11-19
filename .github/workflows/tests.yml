@@ -39,9 +39,9 @@ jobs:
         run: |
           python - <<'PY'
           import sys
-          import pysos_simulate
-          import pysos_simulate.cli
-          import pysos_simulate.supervisor
+          import pysos_coordinate
+          import pysos_coordinate.cli
+          import pysos_coordinate.supervisor
           heavy = {"numpy", "pandas", "pydantic", "requests", "yaml"} & set(sys.modules)
           assert not heavy, f"core imported {sorted(heavy)}"
           PY

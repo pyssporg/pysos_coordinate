@@ -105,7 +105,7 @@ class Federation:
         if self._started:
             raise SupervisorError("federation has already been started")
         if self.log_dir is None:
-            self.log_dir = Path(tempfile.mkdtemp(prefix="pysos-simulate-"))
+            self.log_dir = Path(tempfile.mkdtemp(prefix="pysos-coordinate-"))
         self.log_dir.mkdir(parents=True, exist_ok=True)
         self._started = True
         try:

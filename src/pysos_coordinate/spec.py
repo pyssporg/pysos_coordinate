@@ -185,8 +185,8 @@ class FederationSpec:
             raise SpecError(str(exc)) from None
         if self.timing is not TimingPolicy.WALL_CLOCK:
             raise SpecError(
-                "timing policy must be 'wall_clock' at 0.1.0; deterministic lock-step "
-                "co-simulation is an explicit non-goal of pysos_simulate"
+                "timing policy must be 'wall_clock' at 0.2.0; deterministic lock-step "
+                "co-simulation is an explicit non-goal of pysos_coordinate"
             )
         if not self.instances:
             raise SpecError("federation must declare at least one instance")

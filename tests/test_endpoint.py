@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import pytest
 
-from pysos_simulate.endpoint import Endpoint
+from pysos_coordinate.endpoint import Endpoint
 
 
 def test_json_roundtrip() -> None:

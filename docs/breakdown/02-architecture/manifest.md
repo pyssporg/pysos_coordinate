@@ -11,7 +11,7 @@ identically everywhere.
 | --- | --- | --- | --- |
 | `schema` | int | `1` | must be `1` |
 | `name` | str | — | non-empty federation name |
-| `timing` | str | `"wall_clock"` | `"wall_clock"` only at 0.1.0 |
+| `timing` | str | `"wall_clock"` | `"wall_clock"` only at 0.2.0 |
 | `instances` | list | — | at least one; names unique |
 
 Each instance:
@@ -25,7 +25,7 @@ Each instance:
 | `entities` | list | `[]` | `EntityRef`; duplicate-free within the instance |
 | `telemetry` | list | `[]` | `Endpoint`; unique across the whole federation |
 | `control` | list | `[]` | `Endpoint`; unique across the whole federation |
-| `startup_timeout` | float | `30.0` | positive; validated, not enforced at 0.1.0 |
+| `startup_timeout` | float | `30.0` | positive; validated, not enforced at 0.2.0 |
 
 ## Validation rules
 
@@ -71,7 +71,7 @@ Declared endpoints are what the supervisor uses. `PortAllocator` is a helper for
 callers that have not fixed ports yet:
 
 ```python
-from pysos_simulate import PortAllocator
+from pysos_coordinate import PortAllocator
 
 allocator = PortAllocator()
 for instance in spec.instances:
@@ -85,6 +85,6 @@ per instance name, skips reserved endpoints, and refuses a stride below 2.
 
 ## Versioning
 
-`schema` gates structural change. `0.1.0` reads only schema `1`. A future
+`schema` gates structural change. `0.2.0` reads only schema `1`. A future
 release that changes field meaning must bump the schema and keep a reader for
 the old one, or reject it explicitly; it must not guess.

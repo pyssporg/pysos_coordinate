@@ -1,17 +1,17 @@
-# pysos-simulate
+# pysos-coordinate
 
 Set up and supervise a **federation** of independently launched simulation
 instances. Each instance may be a different engine; the federation only needs
 to know how to start it, where it listens, and how long it may live.
 
-`pysos_simulate` owns **process, ports, timing policy, and status**. It does not
+`pysos_coordinate` owns **process, ports, timing policy, and status**. It does not
 run models and knows nothing about SSP, FMU, DIS, or SysML.
 
 ```bash
-pip install pysos-simulate
-pysos-simulate validate federation.json
-pysos-simulate ports federation.json
-pysos-simulate run federation.json --duration 10 --log-dir logs
+pip install pysos-coordinate
+pysos-coordinate validate federation.json
+pysos-coordinate ports federation.json
+pysos-coordinate run federation.json --duration 10 --log-dir logs
 ```
 
 ## Manifest
@@ -46,17 +46,17 @@ lists and are executed without a shell.
 
 | Module | Surface |
 | --- | --- |
-| `pysos_simulate.endpoint` | `Endpoint(host, port)`, `Endpoint.udp(port)` |
-| `pysos_simulate.entity` | `EntityRef(site, application, entity, marking)` |
-| `pysos_simulate.spec` | `InstanceSpec`, `FederationSpec`, `SpecError` |
-| `pysos_simulate.ports` | `PortAllocator(base=5501, stride=2)` |
-| `pysos_simulate.supervisor` | `Federation`, `InstanceStatus`, `FederationResult` |
-| `pysos_simulate.timing` | `TimingPolicy.WALL_CLOCK` |
+| `pysos_coordinate.endpoint` | `Endpoint(host, port)`, `Endpoint.udp(port)` |
+| `pysos_coordinate.entity` | `EntityRef(site, application, entity, marking)` |
+| `pysos_coordinate.spec` | `InstanceSpec`, `FederationSpec`, `SpecError` |
+| `pysos_coordinate.ports` | `PortAllocator(base=5501, stride=2)` |
+| `pysos_coordinate.supervisor` | `Federation`, `InstanceStatus`, `FederationResult` |
+| `pysos_coordinate.timing` | `TimingPolicy.WALL_CLOCK` |
 
 ```python
 from pathlib import Path
 
-from pysos_simulate import FederationSpec, Federation
+from pysos_coordinate import FederationSpec, Federation
 
 spec = FederationSpec.from_json(data)          # validates on the way in
 result = Federation(spec, log_dir=Path("logs")).run(duration=10.0)
@@ -73,7 +73,7 @@ order. The mapping is deterministic and idempotent per instance name.
 
 ## Timing
 
-Only `TimingPolicy.WALL_CLOCK` exists at 0.1.0. Each instance advances on its
+Only `TimingPolicy.WALL_CLOCK` exists at 0.2.0. Each instance advances on its
 own clock and the supervisor bounds its lifetime. Deterministic lock-step
 co-simulation — a master algorithm negotiating time advances — is an explicit
 non-goal of this package; it belongs to whoever owns the federation protocol.
@@ -87,7 +87,7 @@ non-goal of this package; it belongs to whoever owns the federation protocol.
 
 ## Relation to the family
 
-`pysos_simulate` is the second package in the `pysos_*` family, after
+`pysos_coordinate` is the second package in the `pysos_*` family, after
 `pysos_standard`. It has no dependency on `pyssp_*` packages. `EntityRef` is
 currently a local duplicate of the `pysos_interop` reference: the two agree by
 field name (`site`, `application`, `entity`, `marking`), and a future release
