@@ -9,6 +9,7 @@ from __future__ import annotations
 
 import os
 import re
+import signal
 import subprocess
 import tempfile
 import time
@@ -78,6 +79,7 @@ class FederationResult:
             "duration_s": self.duration_s,
             "timed_out": self.timed_out,
             "log_dir": None if self.log_dir is None else str(self.log_dir),
+            "statuses": [status.to_json() for status in self.statuses],
         }
 
 
@@ -135,6 +137,7 @@ class Federation:
                 stdout=out,
                 stderr=err,
                 shell=False,
+                start_new_session=True,
             )
         except OSError:
             out.close()
@@ -214,8 +217,27 @@ class Federation:
         }
 
     # -- teardown --------------------------------------------------------
+    @staticmethod
+    def _signal_group(proc: subprocess.Popen[bytes], sig: int) -> None:
+        """Signal the instance's process group; an already-gone group is fine.
+
+        Instances are started with ``start_new_session=True``, so ``proc.pid``
+        is also the process-group id and the signal reaches every descendant
+        the instance spawned. ``ProcessLookupError`` and ``PermissionError``
+        mean the group is already gone or no longer ours; neither is an error.
+        """
+        try:
+            os.killpg(proc.pid, sig)
+        except (ProcessLookupError, PermissionError):
+            pass
+
     def stop(self, grace: float = 5.0) -> dict[str, int | None]:
-        """SIGTERM every running instance, wait up to *grace*, then SIGKILL.
+        """SIGTERM every running process group, wait up to *grace*, then SIGKILL.
+
+        The whole group is signalled, not just the direct child, so grandchildren
+        cannot survive a stop. The direct child is still reaped, which fixes its
+        exit code (``-15`` after SIGTERM, ``-9`` after SIGKILL), and instances
+        that already exited are left untouched.
 
         Idempotent: calling it again returns the codes already recorded.
         """
@@ -224,22 +246,20 @@ class Federation:
         if grace < 0:
             raise ValueError("grace must be non-negative")
         running = [proc for proc in self._procs.values() if proc.poll() is None]
+        groups = [proc.pid for proc in running]
         for proc in running:
-            try:
-                proc.terminate()
-            except ProcessLookupError:  # pragma: no cover - race
-                pass
+            self._signal_group(proc, signal.SIGTERM)
         deadline = time.monotonic() + grace
         while running:
             running = [proc for proc in running if proc.poll() is None]
             if not running or time.monotonic() >= deadline:
                 break
             time.sleep(_SLEEP)
-        for proc in running:
-            try:
-                proc.kill()
-            except ProcessLookupError:  # pragma: no cover - race
-                pass
+        # Kill the group even when the direct child has already exited: a
+        # descendant that ignored SIGTERM keeps the group alive.
+        for proc in self._procs.values():
+            if proc.pid in groups:
+                self._signal_group(proc, signal.SIGKILL)
         for proc in self._procs.values():
             try:
                 proc.wait(timeout=grace + 5.0)

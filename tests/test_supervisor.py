@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import json
+import os
 import sys
 import time
 from pathlib import Path
@@ -120,6 +122,83 @@ def test_missing_executable_raises_launch_error(tmp_path: Path) -> None:
     )
     with pytest.raises(LaunchError, match="failed to launch"):
         federation.start()
+
+
+def _wait_for(predicate, *, timeout: float = 3.0) -> bool:
+    deadline = time.monotonic() + timeout
+    while time.monotonic() < deadline:
+        if predicate():
+            return True
+        time.sleep(0.02)
+    return predicate()
+
+
+def _read_pid(path: Path, *, timeout: float = 3.0) -> int | None:
+    pid: int | None = None
+
+    def parsed() -> bool:
+        nonlocal pid
+        text = path.read_text().strip()
+        if not text:
+            return False
+        try:
+            pid = int(text.split()[0])
+        except ValueError:
+            return False
+        return True
+
+    _wait_for(parsed, timeout=timeout)
+    return pid
+
+
+def _pid_alive(pid: int) -> bool:
+    try:
+        os.kill(pid, 0)
+    except ProcessLookupError:
+        return False
+    except PermissionError:  # pragma: no cover - different uid, still alive
+        return True
+    return True
+
+
+def test_stop_kills_grandchildren(tmp_path: Path) -> None:
+    code = (
+        "import subprocess, sys, time\n"
+        "child = subprocess.Popen([sys.executable, '-c', 'import time; time.sleep(60)'])\n"
+        "print(child.pid, flush=True)\n"
+        "time.sleep(60)\n"
+    )
+    federation = _federation(_child(code), log_dir=tmp_path)
+    federation.start()
+    grandchild = _read_pid(federation.logs()["alpha"]["stdout"])
+    assert grandchild is not None, "the child never reported its grandchild pid"
+    assert _pid_alive(grandchild)
+
+    codes = federation.stop(grace=0.5)
+
+    assert codes == {"alpha": -15}
+    assert _wait_for(lambda: not _pid_alive(grandchild)), (
+        f"grandchild {grandchild} survived stop()"
+    )
+
+
+def test_result_json_includes_statuses() -> None:
+    federation = _federation(
+        _child("import time; time.sleep(0.1)"),
+        _child("raise SystemExit(2)", name="beta"),
+    )
+    result = federation.run()
+
+    payload = result.to_json()
+    json.dumps(payload)  # must be JSON-safe: no Path or other exotic values
+    statuses = payload["statuses"]
+    assert [status["name"] for status in statuses] == ["alpha", "beta"]
+    for status in statuses:
+        assert set(status) == {"name", "pid", "running", "exit_code", "started_at"}
+        assert isinstance(status["pid"], int) and status["pid"] > 0
+        assert status["running"] is False
+        assert isinstance(status["started_at"], float)
+    assert [status["exit_code"] for status in statuses] == [0, 2]
 
 
 def test_wait_timeout_returns_running_instances() -> None:

@@ -16,7 +16,7 @@ CLI (`validate`, `run`, `ports`), so a bad manifest fails identically everywhere
 | --- | --- | --- | --- |
 | `schema` | int | `1` | must be `1`; a bool is not an int |
 | `name` | str | — | required, non-empty federation name |
-| `timing` | str | `"wall_clock"` | `"wall_clock"` only at 0.2.0 |
+| `timing` | str | `"wall_clock"` | `"wall_clock"` only at 0.3.0 |
 | `instances` | list | — | required, at least one; names unique |
 
 ## Instance
@@ -30,7 +30,7 @@ CLI (`validate`, `run`, `ports`), so a bad manifest fails identically everywhere
 | `entities` | list | `[]` | `EntityRef` objects; duplicate-free within the instance |
 | `telemetry` | list | `[]` | `Endpoint` objects; unique across the federation |
 | `control` | list | `[]` | `Endpoint` objects; unique across the federation |
-| `startup_timeout` | number | `30.0` | positive; validated, not enforced at 0.2.0 |
+| `startup_timeout` | number | `30.0` | positive; validated and reserved, not enforced at 0.3.0 |
 
 ### EntityRef
 
@@ -55,6 +55,31 @@ integers. A producer that authors integer ids emits their decimal spelling
 An endpoint is a host/port pair only. It carries no protocol, channel name, or
 payload description.
 
+## Metadata the supervisor consumes
+
+The schema is the cross-package contract; the supervisor deliberately uses only
+part of it. This table is normative for what `Federation` does with each field
+at 0.3.0:
+
+| Field | Verdict | What the supervisor does |
+| --- | --- | --- |
+| `schema` | `validated only` | Rejects anything but `1`; never forwarded to a child. |
+| `name` (federation) | `validated only` | Required and non-empty; not used to name or address anything at runtime. |
+| `timing` | `validated only` | Rejects anything but `wall_clock`; no clock is enforced or synchronised. |
+| `instances` | `consumed` (launch) | Launched once each, in manifest order. |
+| `name` (instance) | `consumed` (launch/status/process group) | Identifies the child, its log files, its status entry, and its process group. |
+| `command` | `consumed` (launch) | Passed verbatim to `Popen` as argv with `shell=False`. |
+| `cwd` | `consumed` (launch) | Passed to `Popen`; a missing directory fails the launch. |
+| `env` | `pass-through to consumers` | Producer-owned and opaque to `pysos_coordinate`: the supervisor only merges it over `os.environ`; it never reads or interprets keys. Children read their own keys. |
+| `entities` | `pass-through to consumers` | Shape and per-instance uniqueness are validated; the supervisor never acts on them. |
+| `telemetry` | `pass-through to consumers` | Shape and federation-wide uniqueness are validated; the supervisor never binds or connects them. |
+| `control` | `pass-through to consumers` | Shape and federation-wide uniqueness are validated; the supervisor never binds or connects them. |
+| `startup_timeout` | `validated only` | Validated as a positive number and **reserved**: it is not yet a readiness gate, so `start()` returns as soon as `Popen` succeeds. |
+
+`EntityRef` and `Endpoint` subfields are likewise validated on the way in and
+otherwise passed through; only an instance's own `name`, `command`, and `cwd`
+change what the supervisor does at runtime.
+
 ## Compatibility rules
 
 1. **Schema 1 is current and in use.** A structural change, a field rename, a
@@ -71,7 +96,7 @@ payload description.
    `shell=False`. A producer that starts from one authored command string must
    tokenize it itself without invoking a shell; it must not put the string in
    `command`.
-5. **Unknown keys are not part of the contract.** The 0.2.0 reader ignores
+5. **Unknown keys are not part of the contract.** The 0.3.0 reader ignores
    unrecognised keys so an older consumer can read a newer document, but a
    conforming producer must not rely on that. Only keys defined here are
    emitted.

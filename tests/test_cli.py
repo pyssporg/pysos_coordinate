@@ -116,7 +116,7 @@ def test_run_reports_failures(tmp_path: Path) -> None:
 def test_version_and_help() -> None:
     version = _run("--version")
     assert version.returncode == 0
-    assert version.stdout.strip() == "pysos-coordinate 0.2.1"
+    assert version.stdout.strip() == "pysos-coordinate 0.3.0"
     help_text = _run("--help")
     assert help_text.returncode == 0
     for command in ("run", "validate", "ports"):

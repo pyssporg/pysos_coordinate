@@ -6,6 +6,33 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+## [0.3.0] - 2026-11-19
+
+Process-group teardown and per-instance status in the run result.
+
+### Added
+
+- `FederationResult.to_json()` now includes `statuses`: one JSON-safe entry per
+  instance with `name`, `pid`, `running`, `exit_code`, and `started_at`, so a
+  run manifest can report process state per aircraft.
+- `docs/breakdown/02-architecture/manifest.md` has a normative "Metadata the
+  supervisor consumes" section: one row per schema field with its verdict
+  (`consumed`, `validated only`, or `pass-through to consumers`), including that
+  `startup_timeout` is validated and reserved and that `env` is opaque to
+  `pysos_coordinate`.
+- `docs/breakdown/02-architecture/supervision.md` documents the process-group
+  stop semantics and repeats that `startup_timeout` is reserved.
+
+### Changed
+
+- Instances are launched with `start_new_session=True`, and `stop()` — plus the
+  `run()` and context-manager stop paths that call it — signals the whole
+  process group with `os.killpg` instead of the direct child only. A launcher
+  that forks or execs a simulation child no longer leaves orphaned grandchildren
+  or bound ports behind. The direct child is still reaped, so exit codes are
+  unchanged: `-15` when SIGTERM killed it, `-9` when SIGKILL did. An
+  already-gone or foreign group is treated as gone, never an error.
+
 ## [0.2.1] - 2026-11-19
 
 Documentation-and-contract release: the execution manifest schema is now
