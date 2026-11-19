@@ -6,6 +6,13 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+## [0.2.1] - 2026-11-19
+
+Documentation-and-contract release: the execution manifest schema is now
+specified in-repo (schema version 1, argv commands, string entity ids, top-level
+name); no behaviour change. 0.2.0 was released before this contract was written
+down.
+
 ### Added
 
 - `docs/breakdown/02-architecture/manifest.md` is now the normative schema-1
