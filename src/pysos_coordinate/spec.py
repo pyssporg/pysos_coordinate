@@ -1,5 +1,8 @@
 """Manifest types: one instance, and the federation that supervises many.
 
+This module owns the execution-manifest schema. Its normative definition,
+including compatibility rules, is ``docs/breakdown/02-architecture/manifest.md``.
+
 A manifest is plain data. ``FederationSpec.validate`` is the single gate that
 decides whether a federation may be started; the supervisor calls it and the
 CLI calls it, so an invalid manifest fails the same way everywhere.

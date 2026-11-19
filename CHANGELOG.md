@@ -4,6 +4,21 @@ All notable changes to this project are documented here. The format follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and the project uses
 [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Added
+
+- `docs/breakdown/02-architecture/manifest.md` is now the normative schema-1
+  contract: every top-level and instance key, entity and endpoint shape,
+  defaults, and compatibility rules.
+- A checked-in mirror of the `pysos_sysml` two-instance lowering plus a test
+  that parses and validates it here without importing the setup layer.
+
+### Changed
+
+- Documentation now states that `pysos_coordinate` owns the schema and that
+  consumers conform without importing it. No code or behaviour changed.
+
 ## [0.2.0] - 2026-11-19
 
 ### Changed — BREAKING

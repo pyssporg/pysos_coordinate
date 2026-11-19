@@ -40,7 +40,10 @@ pysos-coordinate run federation.json --duration 10 --log-dir logs
 
 `name`, `instances`, `command`, and each instance `name` are required;
 everything else has a default (`schema` defaults to `1`). Commands are argv
-lists and are executed without a shell.
+lists and are executed without a shell. This package owns the contract; the
+normative field-by-field definition is
+[`docs/breakdown/02-architecture/manifest.md`](docs/breakdown/02-architecture/manifest.md).
+`pysos_sysml` conforms to it without importing this package.
 
 ## Public API
 
