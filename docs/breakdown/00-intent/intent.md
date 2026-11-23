@@ -33,7 +33,7 @@ knows nothing about SSP, FMU, FMI, DIS, or SysML.
 - **No engine knowledge, no protocol knowledge.** A participant is an argv, a
   working directory, an environment, some `EntityRef`s, and some endpoints.
 - **Explicit timing policy.** `TimingPolicy.WALL_CLOCK` is the only policy at
-  0.2.0. Anything else is rejected with a clear error, never ignored.
+  0.3.0. Anything else is rejected with a clear error, never ignored.
 - **Deterministic ports.** Allocation depends only on base, stride, and call
   order; reserving a manifest's declared endpoints prevents collisions.
 - **Explicit failure.** Invalid specs raise `SpecError`, launch failures raise

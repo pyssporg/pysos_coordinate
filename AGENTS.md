@@ -43,7 +43,7 @@ It owns no model semantics.
 - **No protocol knowledge.** Endpoints are host/port pairs. Payloads, encodings,
   discovery, and wire formats are out of scope.
 - **Explicit timing policy.** `TimingPolicy.WALL_CLOCK` is the only supported
-  policy at 0.2.0. A manifest declaring anything else is rejected with a clear
+  policy at 0.3.0. A manifest declaring anything else is rejected with a clear
   error. Deterministic lock-step co-simulation and any master algorithm remain
   explicit non-goals.
 - **Processes, not threads.** Instances are launched with `subprocess.Popen`;
@@ -53,7 +53,7 @@ It owns no model semantics.
 - **Standard library only at runtime.** `dependencies = []` is a commitment.
 - **No dependency on `pyssp_*`.** Sibling packages may be integrated later
   through public modules, never imported from internals, and never required.
-- **`EntityRef` is local at 0.2.0.** It duplicates the `pysos_interop` shape by
+- **`EntityRef` is local at 0.3.0.** It duplicates the `pysos_interop` shape by
   field name on purpose; do not import `pysos_interop` yet.
 - **Failure is explicit.** Invalid manifests raise `SpecError`; launch failures
   raise `LaunchError`; the supervisor never silently skips an instance.
@@ -65,4 +65,6 @@ It owns no model semantics.
   ports and the same result shape.
 - Tests are fast and standard-library only; child processes are
   `sys.executable -c` snippets, never engines.
+- Install for development with `pip install -e ".[dev]"`.
 - Run `ruff check src tests` and `python -m pytest` before claiming success.
+  Ruff is configured in `pyproject.toml` (line length 100, target `py310`).
