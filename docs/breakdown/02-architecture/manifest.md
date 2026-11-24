@@ -18,7 +18,7 @@ CLI (`validate`, `run`, `ports`), so a bad manifest fails identically everywhere
 | --- | --- | --- | --- |
 | `schema` | int | `2` | must be `1` or `2`; a bool is not an int |
 | `name` | str | — | required, non-empty federation name |
-| `timing` | str | `"wall_clock"` | `"wall_clock"` only at 0.3.0 |
+| `timing` | str | `"wall_clock"` | `"wall_clock"` only at 0.4.0 |
 | `instances` | list | — | required, at least one; names unique |
 
 ## Instance
@@ -32,7 +32,7 @@ CLI (`validate`, `run`, `ports`), so a bad manifest fails identically everywhere
 | `entities` | list | `[]` | `EntityRef` objects; duplicate-free within the instance |
 | `telemetry` | list | `[]` | `Endpoint` objects; unique across the federation, Unix paths included |
 | `control` | list | `[]` | `Endpoint` objects; unique across the federation, Unix paths included |
-| `startup_timeout` | number | `30.0` | positive; validated and reserved, not enforced at 0.3.0 |
+| `startup_timeout` | number | `30.0` | positive; validated and reserved, not enforced at 0.4.0 |
 
 ### EntityRef
 
@@ -78,7 +78,7 @@ one federation are allowed.
 
 The schema is the cross-package contract; the supervisor deliberately uses only
 part of it. This table is normative for what `Federation` does with each field
-at 0.3.0:
+at 0.4.0:
 
 | Field | Verdict | What the supervisor does |
 | --- | --- | --- |
@@ -117,7 +117,7 @@ change what the supervisor does at runtime.
    `shell=False`. A producer that starts from one authored command string must
    tokenize it itself without invoking a shell; it must not put the string in
    `command`.
-5. **Unknown keys are not part of the contract.** The 0.3.0 reader ignores
+5. **Unknown keys are not part of the contract.** The 0.4.0 reader ignores
    unrecognised keys so an older consumer can read a newer document, but a
    conforming producer must not rely on that. Only keys defined here are
    emitted.

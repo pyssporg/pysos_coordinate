@@ -213,7 +213,7 @@ class FederationSpec:
             raise SpecError(str(exc)) from None
         if self.timing is not TimingPolicy.WALL_CLOCK:
             raise SpecError(
-                "timing policy must be 'wall_clock' at 0.3.0; deterministic lock-step "
+                "timing policy must be 'wall_clock' at 0.4.0; deterministic lock-step "
                 "co-simulation is an explicit non-goal of pysos_coordinate"
             )
         if not self.instances:

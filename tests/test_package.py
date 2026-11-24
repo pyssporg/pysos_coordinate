@@ -21,7 +21,7 @@ from pysos_coordinate import (
 
 
 def test_version_and_public_surface() -> None:
-    assert pysos_coordinate.__version__ == "0.3.0"
+    assert pysos_coordinate.__version__ == "0.4.0"
     values = (
         Endpoint,
         EntityRef,

@@ -119,7 +119,7 @@ or reserved, appending `-2`, `-3`, … when needed.
 
 ## Timing
 
-Only `TimingPolicy.WALL_CLOCK` exists at 0.3.0. Each instance advances on its
+Only `TimingPolicy.WALL_CLOCK` exists at 0.4.0. Each instance advances on its
 own clock and the supervisor bounds its lifetime. Deterministic lock-step
 co-simulation — a master algorithm negotiating time advances — is an explicit
 non-goal of this package; it belongs to whoever owns the federation protocol.

@@ -6,11 +6,22 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+## [0.4.0] - 2026-11-24
+
+Unix domain socket endpoints and a runnable README quickstart.
+
 ### Added
 
 - Unix domain socket endpoints: `Endpoint.unix(path)` for absolute paths and
   abstract `@name` addresses, schema 2 with UDP schema 1 still readable, and
   `UnixAllocator` for deterministic abstract names that skip reserved paths.
+
+### Changed
+
+- README install and quickstart are runnable as written: a self-contained
+  manifest, `python -m pysos_coordinate` as an alternate entry point, and a note
+  that the source-checkout fixture is not launchable because its engines are not
+  installed.
 
 ## [0.3.0] - 2026-11-19
 
