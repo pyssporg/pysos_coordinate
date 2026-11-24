@@ -40,8 +40,9 @@ It owns no model semantics.
 
 - **No engine knowledge.** This package never imports or knows about SSP, FMU,
   FMI, DIS, SysML, Modelica, or any specific simulator.
-- **No protocol knowledge.** Endpoints are host/port pairs. Payloads, encodings,
-  discovery, and wire formats are out of scope.
+- **No protocol knowledge.** Endpoints are addresses: UDP host/port pairs or
+  Unix socket paths. Payloads, encodings, discovery, and wire formats are out of
+  scope.
 - **Explicit timing policy.** `TimingPolicy.WALL_CLOCK` is the only supported
   policy at 0.3.0. A manifest declaring anything else is rejected with a clear
   error. Deterministic lock-step co-simulation and any master algorithm remain

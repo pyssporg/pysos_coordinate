@@ -22,7 +22,7 @@ knows nothing about SSP, FMU, FMI, DIS, or SysML.
 | --- | --- |
 | federation manifest (`FederationSpec`, `InstanceSpec`) | package/archive formats (`pysos_standard`) |
 | process launch, lifetime, signals | engine execution inside a model (`pyssp_simulate` and engines) |
-| deterministic port allocation and collision checks | wire protocols and payloads (`pysos_interop`, future) |
+| deterministic endpoint allocation (UDP ports, Unix paths) and collision checks | wire protocols and payloads (`pysos_interop`, future) |
 | timing policy declaration | time synchronisation and master algorithms |
 | status, exit codes, captured logs | measurement, judgment, acceptance |
 
@@ -34,8 +34,9 @@ knows nothing about SSP, FMU, FMI, DIS, or SysML.
   working directory, an environment, some `EntityRef`s, and some endpoints.
 - **Explicit timing policy.** `TimingPolicy.WALL_CLOCK` is the only policy at
   0.3.0. Anything else is rejected with a clear error, never ignored.
-- **Deterministic ports.** Allocation depends only on base, stride, and call
-  order; reserving a manifest's declared endpoints prevents collisions.
+- **Deterministic endpoints.** UDP allocation depends only on base, stride, and
+  call order; Unix allocation depends only on the instance name; reserving a
+  manifest's declared endpoints prevents collisions.
 - **Explicit failure.** Invalid specs raise `SpecError`, launch failures raise
   `LaunchError`, non-zero child exits are reported and drive the CLI exit code.
 - **Standard library only.** The base install has no runtime dependencies.
@@ -44,13 +45,14 @@ knows nothing about SSP, FMU, FMI, DIS, or SysML.
 
 - Deterministic lock-step co-simulation or any master time-advance algorithm.
 - Model execution, SSP XML, FMU import, DIS, SysML, or engine adapters.
-- Payload, transport, or discovery protocols beyond host/port endpoints.
+- Payload, transport, or discovery protocols beyond endpoint addresses (UDP
+  host/port or a Unix socket path).
 - Retries, campaign scheduling, measurement, or acceptance decisions.
 - Depending on `pyssp_*`; `pysos_interop` integration is deferred.
 
 ## Success
 
 A caller can describe a heterogeneous federation in one JSON manifest, validate
-it before launch, see the exact ports each instance will use, start the
+it before launch, see the exact endpoints each instance will use, start the
 processes, bound their lifetime, stop them without orphans on the normal path,
 and read back exit codes, timing, and captured logs.

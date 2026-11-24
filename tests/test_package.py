@@ -16,6 +16,7 @@ from pysos_coordinate import (
     SpecError,
     SupervisorError,
     TimingPolicy,
+    UnixAllocator,
 )
 
 
@@ -34,6 +35,7 @@ def test_version_and_public_surface() -> None:
         SpecError,
         SupervisorError,
         TimingPolicy,
+        UnixAllocator,
     )
     for value in values:
         assert value is not None

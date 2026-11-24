@@ -18,7 +18,8 @@ from .endpoint import Endpoint
 from .entity import EntityRef
 from .timing import TimingPolicy
 
-SCHEMA_VERSION = 1
+SCHEMA_VERSION = 2
+SUPPORTED_SCHEMAS = (1, SCHEMA_VERSION)
 
 
 class SpecError(ValueError):
@@ -155,6 +156,27 @@ def _merge_endpoint(
         problems.append(f"endpoint {endpoint} is declared by both {other} and {owner}")
 
 
+def _merge_unix_path(
+    seen: dict[str, str], path: str, owner: str, problems: list[str]
+) -> None:
+    other = seen.get(path)
+    if other is None:
+        seen[path] = owner
+    elif other != owner:
+        problems.append(
+            f"duplicate unix path {path!r} is declared by both {other} and {owner}"
+        )
+
+
+def _uses_unix_endpoints(spec: FederationSpec) -> bool:
+    return any(
+        isinstance(endpoint, Endpoint) and endpoint.transport == "unix"
+        for instance in spec.instances
+        if isinstance(instance, InstanceSpec)
+        for endpoint in (*instance.telemetry, *instance.control)
+    )
+
+
 @dataclass
 class FederationSpec:
     """A named set of instances supervised together."""
@@ -177,11 +199,14 @@ class FederationSpec:
         _as_text(self.name, "federation name")
         if isinstance(self.schema, bool) or not isinstance(self.schema, int):
             raise SpecError(f"schema must be an int, got {type(self.schema).__name__}")
-        if self.schema != SCHEMA_VERSION:
+        if self.schema not in SUPPORTED_SCHEMAS:
+            supported = " and ".join(str(value) for value in SUPPORTED_SCHEMAS)
             raise SpecError(
                 f"unsupported manifest schema {self.schema}; this release reads schema "
-                f"{SCHEMA_VERSION}"
+                f"{supported}"
             )
+        if self.schema == 1 and _uses_unix_endpoints(self):
+            raise SpecError("unix endpoints require schema 2")
         try:
             self.timing = TimingPolicy.coerce(self.timing)
         except ValueError as exc:
@@ -196,6 +221,7 @@ class FederationSpec:
 
         names: set[str] = set()
         endpoints: dict[Endpoint, str] = {}
+        unix_paths: dict[str, str] = {}
         problems: list[str] = []
         for instance in self.instances:
             if not isinstance(instance, InstanceSpec):
@@ -205,23 +231,28 @@ class FederationSpec:
                 problems.append(f"duplicate instance name {instance.name!r}")
             names.add(instance.name)
             seen_local: set[Endpoint] = set()
-            for endpoint in instance.telemetry:
-                if endpoint in seen_local:
-                    problems.append(f"instance {instance.name!r}: duplicate endpoint {endpoint}")
-                seen_local.add(endpoint)
-                _merge_endpoint(endpoints, endpoint, instance.name, problems)
-            for endpoint in instance.control:
-                if endpoint in seen_local:
-                    problems.append(f"instance {instance.name!r}: duplicate endpoint {endpoint}")
-                seen_local.add(endpoint)
-                _merge_endpoint(endpoints, endpoint, instance.name, problems)
+            for kind, declared in (
+                ("telemetry", instance.telemetry),
+                ("control", instance.control),
+            ):
+                owner = f"{instance.name}.{kind}"
+                for endpoint in declared:
+                    if endpoint in seen_local:
+                        problems.append(
+                            f"instance {instance.name!r}: duplicate endpoint {endpoint}"
+                        )
+                    seen_local.add(endpoint)
+                    _merge_endpoint(endpoints, endpoint, instance.name, problems)
+                    if endpoint.transport == "unix" and endpoint.path is not None:
+                        _merge_unix_path(unix_paths, endpoint.path, owner, problems)
         if problems:
             raise SpecError("; ".join(problems))
         return self
 
     def to_json(self) -> dict[str, Any]:
+        schema = 2 if _uses_unix_endpoints(self) else self.schema
         return {
-            "schema": self.schema,
+            "schema": schema,
             "name": self.name,
             "timing": self.timing.value,
             "instances": [instance.to_json() for instance in self.instances],

@@ -6,6 +6,12 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+### Added
+
+- Unix domain socket endpoints: `Endpoint.unix(path)` for absolute paths and
+  abstract `@name` addresses, schema 2 with UDP schema 1 still readable, and
+  `UnixAllocator` for deterministic abstract names that skip reserved paths.
+
 ## [0.3.0] - 2026-11-19
 
 Process-group teardown and per-instance status in the run result.

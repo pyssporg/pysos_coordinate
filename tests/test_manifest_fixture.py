@@ -27,3 +27,9 @@ def test_checked_in_sysml_manifest_parses_and_validates() -> None:
 
     # Constructor validation only: no process is launched.
     Federation(spec)
+
+
+def test_checked_in_udp_manifest_round_trips_byte_identically() -> None:
+    spec = FederationSpec.from_json(json.loads(FIXTURE.read_text(encoding="utf-8")))
+    restored = json.dumps(spec.to_json(), indent=2, sort_keys=True) + "\n"
+    assert restored == FIXTURE.read_text(encoding="utf-8")

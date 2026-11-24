@@ -37,7 +37,7 @@ point when the console script is not on `PATH`.
 
 ```json
 {
-  "schema": 1,
+  "schema": 2,
   "name": "demo",
   "timing": "wall_clock",
   "instances": [
@@ -57,7 +57,7 @@ point when the console script is not on `PATH`.
 ```
 
 `name`, `instances`, `command`, and each instance `name` are required;
-everything else has a default (`schema` defaults to `1`). Commands are argv
+everything else has a default (`schema` defaults to `2`). Commands are argv
 lists and are executed without a shell. The command above is a portable
 placeholder that exits immediately; a real manifest names the engine's argv and
 `cwd`. This package owns the contract; the
@@ -69,10 +69,10 @@ normative field-by-field definition is
 
 | Module | Surface |
 | --- | --- |
-| `pysos_coordinate.endpoint` | `Endpoint(host, port)`, `Endpoint.udp(port)` |
+| `pysos_coordinate.endpoint` | `Endpoint(host, port)`, `Endpoint.udp(port)`, `Endpoint.unix(path)` |
 | `pysos_coordinate.entity` | `EntityRef(site, application, entity, marking)` |
 | `pysos_coordinate.spec` | `InstanceSpec`, `FederationSpec`, `SpecError` |
-| `pysos_coordinate.ports` | `PortAllocator(base=5501, stride=2)` |
+| `pysos_coordinate.ports` | `PortAllocator(base=5501, stride=2)`, `UnixAllocator(prefix="pysos")` |
 | `pysos_coordinate.supervisor` | `Federation`, `InstanceStatus`, `FederationResult` |
 | `pysos_coordinate.timing` | `TimingPolicy.WALL_CLOCK` |
 
@@ -90,11 +90,32 @@ assert result.ok, result.exit_codes
 
 ## Endpoints
 
+An endpoint is either UDP (`host`/`port`) or a Unix domain socket (`path`):
+an absolute filesystem path such as `/run/pysos/alpha.sock`, or a Linux
+abstract name such as `@pysos-alpha`. Schema 2 adds Unix endpoints; schema 1
+manifests remain readable and round-trip unchanged. UDP JSON keeps exactly
+`{"host", "port"}`, while Unix JSON is `{"transport": "unix", "path": "..."}`.
+
+```python
+from pysos_coordinate import Endpoint
+
+udp = Endpoint.udp(5601)
+sock = Endpoint.unix("@pysos-alpha")     # or Endpoint.unix("/tmp/alpha.sock")
+assert udp.address == "127.0.0.1:5601"
+assert sock.address == "@pysos-alpha"
+```
+
 `PortAllocator.allocate(instance)` returns `(telemetry, control)` from a fixed
 band: `base + i * stride` and `base + i * stride + 1`, where `i` is allocation
 order. The mapping is deterministic and idempotent per instance name.
 `reserve(endpoint)` and `reserve_spec(spec)` protect ports already in use;
 `conflicts(spec)` reports overlaps before anything is launched.
+
+`UnixAllocator.allocate(instance)` returns an abstract `@<prefix>-<name>` path,
+lowercased and sanitized to `[a-z0-9-]`, capped well under the 108-byte
+`sun_path` limit. It is deterministic and idempotent per instance name;
+`reserve(endpoint)` and `reserve_spec(spec)` skip Unix paths already declared
+or reserved, appending `-2`, `-3`, … when needed.
 
 ## Timing
 

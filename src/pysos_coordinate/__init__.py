@@ -8,7 +8,7 @@ from __future__ import annotations
 
 from .endpoint import Endpoint
 from .entity import EntityRef
-from .ports import PortAllocator
+from .ports import PortAllocator, UnixAllocator
 from .spec import FederationSpec, InstanceSpec, SpecError
 from .supervisor import (
     Federation,
@@ -34,5 +34,6 @@ __all__ = [
     "SpecError",
     "SupervisorError",
     "TimingPolicy",
+    "UnixAllocator",
     "__version__",
 ]
