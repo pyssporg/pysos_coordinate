@@ -50,6 +50,17 @@ jobs:
           name: dist
           path: dist/
 
+      - name: Guard against an empty distribution
+        run: |
+          shopt -s nullglob
+          wheels=(dist/*.whl)
+          sdists=(dist/*.tar.gz)
+          if [ ${#wheels[@]} -eq 0 ] || [ ${#sdists[@]} -eq 0 ]; then
+            echo "dist/ must contain at least one .whl and one .tar.gz; refusing to publish." >&2
+            exit 1
+          fi
+          echo "dist/ has ${#wheels[@]} wheel(s) and ${#sdists[@]} sdist(s)."
+
       - name: Attach to release
         if: startsWith(github.ref, 'refs/tags/v')
         env:
